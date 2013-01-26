@@ -1,0 +1,3 @@
+[submodule "ProbabilisticEngineTestSuite"]
+	path = ProbabilisticEngineTestSuite
+	url = git@github.com:probcomp/ProbabilisticEngineTestSuite.git
