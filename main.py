@@ -1,9 +1,9 @@
-import client
-import lisp_parser # From here: http://norvig.com/lispy.html
-from venture_infrastructure import *
+from ProbabilisticEngineTestSuite import client
+from ProbabilisticEngineTestSuite import lisp_parser # From here: http://norvig.com/lispy.html
+from ProbabilisticEngineTestSuite import venture_infrastructure
 from itertools import *
 
-class stochastic_test(venture_infrastructure):
+class stochastic_test(venture_infrastructure.venture_infrastructure):
 
   def LoadProgram(self):
     MyRIPL = self.RIPL
