@@ -13,6 +13,28 @@ from random import choice
 import time
 from matplotlib.pyplot import *
 
+GLOBAL = None
+
+class Multiply: 
+	def __init__(self): 
+		self.a = 6 
+		self.b = 5 
+		self.name = 6969
+    
+	def multiply(self):
+		c = self.a*self.b
+		print 'The result of', self.a, 'x', self.b, ':', c
+		return c
+    
+	def getname(self):
+		c = self.name
+		return c
+
+	def multiply2(self, a, b):
+		c = a*b
+		print 'The result of', a, 'x', b, ':', c
+		return c                  
+
 
 class Renderer:
 
@@ -70,10 +92,10 @@ class Renderer:
 		things.append({'id':'E', 'size':50, 'left':140, 'top':160,'blur_sigsq':3})
 		things.append({'id':'M', 'size':20, 'left':240, 'top':20,'blur_sigsq':0})
 	
-		t0 = time.time()
+		#t0 = time.time()
 		im = self.get_rendered_image(state,things)
-		t1 = time.time()
-		print t1-t0
+		#t1 = time.time()
+		#print t1-t0
 
 		imshow(im, cmap=cm.Greys)
 		show()
@@ -81,4 +103,7 @@ class Renderer:
 def runall():
 	r = Renderer()
 	r.test()
-	return 0
+	GLOBAL = GLOBAL +  1
+	return GLOBAL
+
+#runall()

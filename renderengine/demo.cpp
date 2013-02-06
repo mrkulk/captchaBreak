@@ -2,24 +2,31 @@
 // g++ -I/usr/include/python -lpython demo.cpp -o demo
 
 #include "Python/Python.h"
+#include <time.h>
 
-int
-main(int argc, char *argv[])
+PyObject *pName, *pModule, *pDict, *pClass, *pInstance, *pValue;
+PyObject *sys_path; 
+PyObject *path; 
+
+
+/* FUNCTION PROTOTYPES */
+int callPy();
+
+int main(int argc, char *argv[])
 {
-    PyObject *pName, *pModule, *pDict, *pFunc;
-    PyObject *pArgs, *pValue;
-    PyObject *sys_path; 
-    PyObject *path; 
-    int i;
+    clock_t begin, end;
+    double time_spent;
 
-    if (argc < 3) {
-        fprintf(stderr,"Usage: call pythonfile funcname [args]\n");
+    ////////////// INITIALIZATIONS START  ////////////
+    if (argc < 4) 
+    {
+        fprintf(stderr,"Usage: call python_filename class_name function_name\n");
         return 1;
     }
 
     Py_Initialize();
     pName = PyString_FromString(argv[1]);
-    /* Error checking of pName left out */
+
 
     sys_path = PySys_GetObject("path"); 
     if (sys_path == NULL) 
@@ -30,54 +37,52 @@ main(int argc, char *argv[])
     if (PyList_Append(sys_path, path) < 0) 
         return NULL;
 
-  //  PySys_SetPath(".");
+
     pModule = PyImport_Import(pName);
+    pDict = PyModule_GetDict(pModule);
+   
+    // Build the name of a callable class 
+    pClass = PyDict_GetItemString(pDict, argv[2]);
+
+    // Create an instance of the class
+    if (PyCallable_Check(pClass))
+    {
+        pInstance = PyObject_CallObject(pClass, NULL); 
+    }
+    ////////////// INITIALIZATIONS ENDS  ////////////
+
+
+    begin = clock();
+    callPy();
+    end = clock();
+    printf("Elapsed 1: %f seconds\n", (double)(end - begin) / CLOCKS_PER_SEC);
+
+    begin = clock();
+    callPy();
+    end = clock();
+    printf("Elapsed 2: %f seconds\n", (double)(end - begin) / CLOCKS_PER_SEC);
+
+    // Clean up
+    Py_DECREF(pValue);
+    Py_DECREF(pModule);
     Py_DECREF(pName);
-
-    if (pModule != NULL) {
-        pFunc = PyObject_GetAttrString(pModule, argv[2]);
-        /* pFunc is a new reference */
-
-        if (pFunc && PyCallable_Check(pFunc)) {
-            pArgs = PyTuple_New(argc - 3);
-            for (i = 0; i < argc - 3; ++i) {
-                pValue = PyInt_FromLong(atoi(argv[i + 3]));
-                if (!pValue) {
-                    Py_DECREF(pArgs);
-                    Py_DECREF(pModule);
-                    fprintf(stderr, "Cannot convert argument\n");
-                    return 1;
-                }
-                /* pValue reference stolen here: */
-                PyTuple_SetItem(pArgs, i, pValue);
-            }
-            pValue = PyObject_CallObject(pFunc, pArgs);
-            Py_DECREF(pArgs);
-            if (pValue != NULL) {
-                printf("Result of call: %ld\n", PyInt_AsLong(pValue));
-                Py_DECREF(pValue);
-            }
-            else {
-                Py_DECREF(pFunc);
-                Py_DECREF(pModule);
-                PyErr_Print();
-                fprintf(stderr,"Call failed\n");
-                return 1;
-            }
-        }
-        else {
-            if (PyErr_Occurred())
-                PyErr_Print();
-            fprintf(stderr, "Cannot find function \"%s\"\n", argv[2]);
-        }
-        Py_XDECREF(pFunc);
-        Py_DECREF(pModule);
-    }
-    else {
-        PyErr_Print();
-        fprintf(stderr, "Failed to load \"%s\"\n", argv[1]);
-        return 1;
-    }
     Py_Finalize();
+
+    return 0;
+}
+
+
+int callPy() {
+    pValue = PyObject_CallMethod(pInstance, "multiply2", "(ii)", 10,5);
+   
+    if (pValue != NULL) 
+    {
+        printf("Return of call : %d\n", PyInt_AsLong(pValue));
+    }
+    else 
+    {
+        PyErr_Print();
+    }
+    
     return 0;
 }
