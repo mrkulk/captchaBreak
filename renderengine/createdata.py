@@ -1,4 +1,3 @@
-from matplotlib.pyplot import *
 import numpy as np
 from matplotlib import *
 import matplotlib.cm as cm
@@ -12,6 +11,7 @@ import numpy as np
 import numpy.random as npr
 from random import choice
 import time
+from matplotlib.pyplot import *
 
 
 class Renderer:
@@ -78,5 +78,7 @@ class Renderer:
 		imshow(im, cmap=cm.Greys)
 		show()
 
-r = Renderer()
-r.test()
+def runall():
+	r = Renderer()
+	r.test()
+	return 0

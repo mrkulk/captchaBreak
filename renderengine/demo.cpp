@@ -8,6 +8,8 @@ main(int argc, char *argv[])
 {
     PyObject *pName, *pModule, *pDict, *pFunc;
     PyObject *pArgs, *pValue;
+    PyObject *sys_path; 
+    PyObject *path; 
     int i;
 
     if (argc < 3) {
@@ -19,6 +21,16 @@ main(int argc, char *argv[])
     pName = PyString_FromString(argv[1]);
     /* Error checking of pName left out */
 
+    sys_path = PySys_GetObject("path"); 
+    if (sys_path == NULL) 
+        return NULL; 
+    path = PyString_FromString(".");
+    if (path == NULL) 
+        return NULL; 
+    if (PyList_Append(sys_path, path) < 0) 
+        return NULL;
+
+  //  PySys_SetPath(".");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
