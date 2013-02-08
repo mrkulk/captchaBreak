@@ -1,6 +1,10 @@
-from ProbabilisticEngineTestSuite import client
-from ProbabilisticEngineTestSuite import lisp_parser # From here: http://norvig.com/lispy.html
-from ProbabilisticEngineTestSuite import venture_infrastructure
+import os, sys
+lib_path = os.path.abspath('ProbabilisticEngineTestSuite')
+sys.path.append(lib_path)
+
+import client
+import lisp_parser # From here: http://norvig.com/lispy.html
+import venture_infrastructure
 from itertools import *
 
 class stochastic_test(venture_infrastructure.venture_infrastructure):
