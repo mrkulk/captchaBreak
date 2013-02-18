@@ -12,107 +12,120 @@ import numpy.random as npr
 from random import choice
 import time
 from matplotlib.pyplot import *
+import pickle
+from math import *
+import scipy
+import pdb
+import pygame
 
+
+SIZEX = 200
+SIZEY = 200
 
 class Renderer:
 
 	def __init__(self):
-		self.size_x = 3
-		self.size_y = 3
-		self.size_x, self.size_y = 300,300
-		my_dpi = 100
-		inches_sizex, inches_sizey = self.size_x/my_dpi, self.size_y/my_dpi
-		self.f = Figure(frameon=False, dpi=my_dpi)
-	    	self.f.set_size_inches(inches_sizex, inches_sizey)
-	    	self.ax = Axes(self.f, [0., 0., 1., 1.])
-	    	self.ax.set_axis_off()
-	    	self.f.add_axes(self.ax)
-		self.canvas = FigureCanvasAgg(self.f)
+		self.size_x, self.size_y = SIZEX, SIZEY
+		self.my_dpi = 100
+		self.inches_sizex, self.inches_sizey = self.size_x/self.my_dpi, self.size_y/self.my_dpi
+		self.FLAG = 0
 
 		#Important parameters
 		self.loglikelihood = None
 		self.observedIm = None
 		self.currentIm = None
 		self.state = dict()
-		self.state['params'] = {'room_self.size_x':300, 'room_self.size_y':300}
+		self.state['params'] = {'room_self.size_x':SIZEX, 'room_self.size_y':SIZEY}
 		self.state['blur'] = True
+
+		#pygame.init()
+		#self.screen = pygame.display.set_mode((SIZEX,SIZEY)) 
 
 
 	def loadImage(self,filename):
-		self.observedIm = Image.load(filename)
+		self.observedIm = pickle.load(open("demo.pkl","rb")) #Image.load('filename')
 		return 1
-
-	def renderImage(self, params):
-		things = []
-		for i in range(size(params)):
-			things.append({'id':params[i]['id'],
-						 	'size':params[i]['size'], 
-						 	'left':params[i]['left'], 
-						 	'top':params[i]['top'],
-						 	'blur_sigsq':params[i]['blur_sigsq']})
-
-		#t0 = time.time()
-		self.currentIm = self.get_rendered_image(state,things)
-		#t1 = time.time()
-		#print t1-t0
-		
-		#imshow(im, cmap=cm.Greys)
-		#show()
 
 
 	def getLogLikelihood(self):
-		px_disgaree_matrix = np.mod(np.subtract(self.observedIm,self.currentIm))
-		px_disagree = sum(sum(px_disgaree_matrix)) + 1
-		self.loglikelihood = log(1/px_disagree)
+		px_agree = 0
+		for ii in range(200):
+			for jj in range(200):
+				if self.observedIm[ii][jj] == 1 and self.currentIm[ii][jj] == 1:
+					px_agree = px_agree + 1
+		#px_disgaree_matrix = np.subtract(self.observedIm,self.currentIm)
+		##px_disagree = sum(sum(px_disgaree_matrix)) + 1
+		##self.loglikelihood = log(float(1)/px_disagree)
+		#indicator = len(np.where(px_disgaree_matrix==0)[0])
+		self.loglikelihood = log(px_agree+1)
 		return self.loglikelihood
 
-	def render_thing(self,state,thing):
-	    self.ax.text(float(thing['left'])/state['params']['room_self.size_x'], float(thing['top'])/state['params']['room_self.size_y'], thing['id'], size = thing['size'])
-	    self.canvas.draw()
-	    im_str = self.canvas.tostring_rgb()
+	def render_thing(self,thing):
+		self.f = Figure(frameon=False, dpi=self.my_dpi)
+		self.f.set_size_inches(self.inches_sizex, self.inches_sizey)	
+		self.ax = Axes(self.f, [0., 0., 1., 1.])
+		self.ax.set_axis_off()
+		self.f.add_axes(self.ax)
+		self.canvas = FigureCanvasAgg(self.f)
 
-	    a = np.fromstring(im_str, dtype=np.uint8)
-	    im = a.reshape(self.size_x, self.size_y, 3)
+		self.ax.text(float(thing['left'])/self.state['params']['room_self.size_x'], float(thing['top'])/self.state['params']['room_self.size_y'], thing['id'], size = thing['size'])
+		self.canvas.draw()
 
-	    im = np.sum(im, 2)
-	    im = np.float64(im)
-	    im = im/np.max(im)
-	    im = 1-im
-	    if state['blur']:
-	    	bim = gaussian_filter(im, thing['blur_sigsq'], mode='wrap')
-	    return bim
+	 	im_str = self.canvas.tostring_rgb()
+		a = np.fromstring(im_str, dtype=np.uint8)
+	 	im = a.reshape(self.size_x, self.size_y, 3)
 
-	def get_rendered_image(self,state,things):
+	   	im = np.sum(im, 2)
+	   	im = np.float64(im)
+	   	im = im/np.max(im)
+	   	im = 1-im
+	   	if self.state['blur']:
+	   		bim = gaussian_filter(im, thing['blur_sigsq'], mode='wrap')
+	   	return bim
+
+	def get_rendered_image(self,things):
+		print things
+
 		for i in range(len(things)):
-			bim = self.render_thing(state,things[i])			
+			bim = self.render_thing(things[i])			
 			bim = npr.binomial(1, bim/np.max(bim))
 			if i == 0:
 				bim[bim.nonzero()] = 1
 				im = bim
 			else:
-	    			im[bim.nonzero()] = 1
+				im[bim.nonzero()] = 1
+		self.currentIm = im
+		
+		scipy.misc.imsave('output.jpg', im)
+
 		return im
 
 
 	def test(self):
-		state = dict()
-		state['params'] = {'room_self.size_x':300, 'room_self.size_y':300}
-		state['blur'] = True
+		self.state = dict()
+		self.state['params'] = {'room_self.size_x':SIZEX, 'room_self.size_y':SIZEY}
+		self.state['blur'] = True
 
 		things = []
-		things.append({'id':'A', 'size':50, 'left':100, 'top':100,'blur_sigsq':50})
-		things.append({'id':'Z', 'size':20, 'left':0, 'top':100,'blur_sigsq':10})
-		things.append({'id':'C', 'size':30, 'left':40, 'top':120,'blur_sigsq':0})
-		things.append({'id':'E', 'size':50, 'left':140, 'top':160,'blur_sigsq':3})
-		things.append({'id':'M', 'size':20, 'left':240, 'top':20,'blur_sigsq':0})
+		things.append({'id':'D', 'size':40, 'left':100, 'top':100,'blur_sigsq':0})
+		#things.append({'id':'Z', 'size':20, 'left':0, 'top':100,'blur_sigsq':10})
+		#things.append({'id':'C', 'size':30, 'left':40, 'top':120,'blur_sigsq':0})
+		#things.append({'id':'E', 'size':50, 'left':140, 'top':160,'blur_sigsq':3})
+		#things.append({'id':'M', 'size':20, 'left':240, 'top':20,'blur_sigsq':0})
 	
-		#t0 = time.time()
-		im = self.get_rendered_image(state,things)
-		#t1 = time.time()
-		#print t1-t0
-
+		t0 = time.time()
+		im = self.get_rendered_image(things)
+		t1 = time.time()
+		print t1-t0
+		pickle.dump(im,open("demo.pkl","wb"))
+		scipy.misc.imsave('demo.jpg', im)
+		#imshow(im, cmap=cm.Greys)
+		"""things=[]
+		things.append({'id':'A', 'size':50, 'left':0, 'top':0,'blur_sigsq':1})
+		
+		im = self.get_rendered_image(things)
 		imshow(im, cmap=cm.Greys)
-		show()
+		show()"""
 
 def runall():
 	r = Renderer()
@@ -120,3 +133,5 @@ def runall():
 
 
 #runall()
+
+
