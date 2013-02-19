@@ -14,5 +14,5 @@ class renderImageXRP:
 		#this is a big hack
 		self.id_of_this_xrp = self.id_of_this_xrp + 1
 
-	def getLogLikelihood(self):
+	def getLogLikelihood(self,xrpid,pflip):
 		return 0

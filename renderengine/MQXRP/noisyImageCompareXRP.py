@@ -27,13 +27,17 @@ class noisyImageCompareXRP:
 		self.is_random_choice = 1
 		self.name = "noisyImageCompareXRP"
 		self.renderer = renderer
+		self.logl = dict()
 
 	def execFunc(self,args):
 		return
 
-	def getLogLikelihood(self):
-		l = self.renderer.getLogLikelihood()
-		#print "$$$$$$$$$$$$$$$$$$$$$$ : ", l
-		#imshow(self.renderer.observedIm + self.renderer.currentIm)
-		#show()
-		return l
+	def getLogLikelihood(self,imageid,pflip):
+		if (self.logl.has_key(imageid)):
+			print imageid, "||", self.logl[imageid]
+			return self.logl[imageid]
+		else:
+			l = self.renderer.getLogLikelihood(pflip)
+			self.logl[imageid] = l
+			print imageid, "||", self.logl[imageid]
+			return l

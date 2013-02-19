@@ -10,5 +10,5 @@ class loadImageXRP:
 	def execFunc(self,args):
 		self.renderer.loadImage("")
 
-	def getLogLikelihood(self):
+	def getLogLikelihood(self,xrpid,pflip):
 		return 0

@@ -40,7 +40,7 @@ def createnewXRP(XRPid):
 
 
 def dispatch(message):
-	print message
+	#print message
 	message = message.split(":")
 	cmd = message[0]
 	XRPid = int(message[1])
@@ -51,15 +51,15 @@ def dispatch(message):
 		socket.send(str(xrpOBJ.id_of_this_xrp))
 
 		message = socket.recv()
-		print message
+		#print message
 		socket.send(str(xrpOBJ.is_scorable))
 
 		message = socket.recv()
-		print message
+		#print message
 		socket.send(str(xrpOBJ.is_random_choice))
 
 		message = socket.recv()
-		print message
+		#print message
 		socket.send(str(xrpOBJ.name))
 		return 
 
@@ -72,8 +72,9 @@ def dispatch(message):
 	elif cmd == "GetLogL":
 		if XRPid >=RENDER_XRP: #this is a hack!
 			XRPid = RENDER_XRP
-		print MMU[XRPid].name, "| getlog:", str(MMU[XRPid].getLogLikelihood())
-		socket.send(str(MMU[XRPid].getLogLikelihood()))
+		logscore = str(MMU[XRPid].getLogLikelihood(int(message[2]),float(message[3])))
+		#print MMU[XRPid].name, "| getlog:", logscore
+		socket.send(logscore)
 
 	else:
 		print "[ERROR] In dispatch - cannot recognize OPCODE"
@@ -84,8 +85,8 @@ while True:
 	#print "Waiting for clients ..."
 	message = socket.recv()
 	#print "Recieved reply", "[", message, "]"
-	print "###########"
+	#print "###########"
 	ret = str(dispatch(message))
-	print "###########"
+	#print "###########"
 	#print "Sending request"	, "...", ret
 
