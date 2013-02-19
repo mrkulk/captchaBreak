@@ -25,13 +25,13 @@ class stochastic_test(venture_infrastructure.venture_infrastructure):
     
     MyRIPL.clear() # To delete previous sessions data.
    
-    MyRIPL.assume("posx", lisp_parser.parse("(uniform-discrete 20 180)"))
-    MyRIPL.assume("posy", lisp_parser.parse("(uniform-discrete 20 180)"))
-    MyRIPL.assume("size", lisp_parser.parse("(uniform-discrete 30 50)"))
+    MyRIPL.assume("posx", lisp_parser.parse("(uniform-discrete 20 160)"))
+    MyRIPL.assume("posy", lisp_parser.parse("(uniform-discrete 20 160)"))
+    MyRIPL.assume("size", lisp_parser.parse("(uniform-discrete 30 60)"))
     MyRIPL.assume("id", lisp_parser.parse("(uniform-discrete 0 25)"))
-    MyRIPL.assume("blur", lisp_parser.parse("(* (beta 1 5) 40)"))
+    MyRIPL.assume("blur", lisp_parser.parse("(* (beta 1 2) 40)"))
     MyRIPL.assume("alpha", lisp_parser.parse("(uniform-continuous 0.01 5)"))    
-    MyRIPL.assume("pflip", lisp_parser.parse("(beta 1 10)"))
+    MyRIPL.assume("pflip", lisp_parser.parse("(beta 1 alpha)"))
 
 
     MyRIPL.assume("LOAD-IMAGE", lisp_parser.parse("1"))
@@ -54,8 +54,8 @@ class stochastic_test(venture_infrastructure.venture_infrastructure):
 
     logsArray = []
     cnt = 0
-    while cnt < 100:
-        MyRIPL.infer(20)
+    while cnt < 200:
+        MyRIPL.infer(50)
         posx = MyRIPL.report_value(1)
         posy = MyRIPL.report_value(2)
         size = MyRIPL.report_value(3)
