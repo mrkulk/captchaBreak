@@ -30,7 +30,7 @@ class stochastic_test(venture_infrastructure.venture_infrastructure):
     MyRIPL.assume("size", lisp_parser.parse("(uniform-discrete 30 60)"))
     MyRIPL.assume("id", lisp_parser.parse("(uniform-discrete 0 25)"))
     MyRIPL.assume("blur", lisp_parser.parse("(* (beta 1 2) 40)"))
-    MyRIPL.assume("alpha", lisp_parser.parse("(uniform-continuous 0.01 5)"))    
+    MyRIPL.assume("alpha", lisp_parser.parse("(uniform-continuous 0.01 8)"))    
     MyRIPL.assume("pflip", lisp_parser.parse("(beta 1 alpha)"))
 
 
@@ -54,7 +54,7 @@ class stochastic_test(venture_infrastructure.venture_infrastructure):
 
     logsArray = []
     cnt = 0
-    while cnt < 200:
+    while cnt < 400:
         MyRIPL.infer(50)
         posx = MyRIPL.report_value(1)
         posy = MyRIPL.report_value(2)

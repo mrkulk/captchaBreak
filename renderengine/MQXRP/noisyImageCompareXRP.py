@@ -34,10 +34,10 @@ class noisyImageCompareXRP:
 
 	def getLogLikelihood(self,imageid,pflip):
 		if (self.logl.has_key(imageid)):
-			print imageid, "||", self.logl[imageid]
+			#print imageid, "||", self.logl[imageid]
 			return self.logl[imageid]
 		else:
 			l = self.renderer.getLogLikelihood(pflip)
 			self.logl[imageid] = l
-			print imageid, "||", self.logl[imageid]
+			#print imageid, "||", self.logl[imageid]
 			return l
