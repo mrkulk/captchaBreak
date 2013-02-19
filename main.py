@@ -33,6 +33,12 @@ class stochastic_test(venture_infrastructure.venture_infrastructure):
     MyRIPL.assume("alpha", lisp_parser.parse("(uniform-continuous 0.01 8)"))    
     MyRIPL.assume("pflip", lisp_parser.parse("(beta 1 alpha)"))
 
+    #### REMOVE LATER
+    """MyRIPL.observe("posx",120)
+    MyRIPL.observe("posy", 90)
+    MyRIPL.observe("blur", 0.0)
+    MyRIPL.observe("size", 40)"""
+    #### REMOVE LATER ENDS
 
     MyRIPL.assume("LOAD-IMAGE", lisp_parser.parse("1"))
     MyRIPL.assume("RENDER-IMAGE", lisp_parser.parse("10"))
